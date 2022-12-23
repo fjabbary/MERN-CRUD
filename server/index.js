@@ -28,6 +28,19 @@ app.post('/createUser', async (req, res) => {
     }
 })
 
+app.delete('/:id', async (req, res) => {
+    const id = req.params.id;
+    await UserModel.deleteOne({ _id: id })
+})
+
+app.put('/update', (req, res) => {
+    const { id, newUsername } = req.body;
+    UserModel.findById(id).then((UserModel) => {
+        return Object.assign(UserModel, { username: newUsername });
+    }).then((UserModel) => {
+        return UserModel.save();
+    })
+})
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)

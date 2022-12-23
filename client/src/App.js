@@ -8,17 +8,31 @@ function App() {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [age, setAge] = useState("");
+  const [newUsername, setNewUsername] = useState("");
 
   useEffect(() => {
     Axios.get('http://localhost:3001/getUsers')
       .then(res => { setUsers(res.data) })
   }, [users])
 
+  const handleDelete = async id => {
+    await Axios.delete(`http://localhost:3001/${id}`)
+  }
+
+  const handleUpdateUsername = async id => {
+    await Axios.put('http://localhost:3001/update', {
+      id: id,
+      newUsername: newUsername
+    })
+  }
+
   const usersJSX = users.map(user => {
     return (
       <div key={user._id} className="user">
-        <h2>{user.name}</h2>
+        <h2>{user.name} <button onClick={() => handleDelete(user._id)}>Delete</button></h2>
         <p>{user.username} - {user.age}</p>
+        <input type="text" onChange={e => setNewUsername(e.target.value)} />
+        <button onClick={handleUpdateUsername.bind(this, user._id)}>Update Username</button>
       </div>
     )
   })
@@ -27,6 +41,9 @@ function App() {
     e.preventDefault();
     const newUser = { name, username, age }
     await Axios.post('http://localhost:3001/createUser', newUser)
+    setName('');
+    setUsername('');
+    setAge('');
   }
 
   return (
